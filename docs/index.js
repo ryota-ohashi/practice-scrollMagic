@@ -7,7 +7,7 @@ var scroll = 0;
 // 一枚あたりのスクロール量
 var oneImageDuration = 400;
 var numImage = kv.length;
-var duration = oneImageDuration * numImage;
+var duration = oneImageDuration * (numImage -  1);
 
 // controller
 var controller = new ScrollMagic.Controller();
@@ -41,29 +41,44 @@ document.addEventListener('scroll', function () {
   switchImage(scroll);
 });
 
+// 初期起動
+switchImage(scroll);
+
 function switchImage(scroll) {
 
+  // kv外の時はreturn
+  if (scroll >= duration) return;
+
     // kv外の時はラストの画像のopacityを1にして早々にreturn
-    if (scroll > duration) {
-      $(kv[numImage- 1]).css("opacity", 1);
+    if (scroll >= duration) {
+      $(kv[0]).css("opacity", 0);
+      $(kv[numImage - 2]).css("opacity", 0);
+      $(kv[numImage - 1]).css("opacity", 1);
       return;
     }
 
     // 画像切り替え
     for (let i = 0; i < kv.length; i++) {
 
-      if ( oneImageDuration * (i) < scroll && scroll <= oneImageDuration * (i + 1) ) {
+      var activeNum;
 
+      if ( oneImageDuration * i <= scroll && scroll < oneImageDuration * (i + 1) ) {
+
+        activeNum = i;
         const valueDec = calcValue(scroll, i, "dec");
         const valueInc = calcValue(scroll, i, "inc");
 
-        // i = 0の時はスキップ
-        if (i !== 0) $(kv[i - 1]).css("opacity", valueDec);
-        $(kv[i]).css("opacity", valueInc);
+        $(kv[i]).css("opacity", valueDec);
+        $(kv[i + 1]).css("opacity", valueInc);
 
       }else{
         // スクロールが早い場合を考慮して、対象以外の画像のopacityを0に
-        $(kv[i]).css("opacity", 0);
+        $(kv[i + 1]).css("opacity", 0);
+        // $(kv).each(function (index, el) {
+        //   if (index !== activeNum && index !== activeNum + 1){
+        //     $(el).css("opacity", 0);
+        //   }
+        // });
       }
 
     }
