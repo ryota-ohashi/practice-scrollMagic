@@ -1,9 +1,12 @@
 // scrollmagicを用いてkvをピン留め、
 // kv内の画像をスクロール量と連動させながら切り替えする
 
+var kv = $(".kv").children();
+var scroll = 0;
+
 // 一枚あたりのスクロール量
 var oneImageDuration = 400;
-var numImage = 5;
+var numImage = kv.length;
 var duration = oneImageDuration * numImage;
 
 // controller
@@ -16,8 +19,6 @@ var scene = new ScrollMagic.Scene({
   .setPin(".kv")
   .addTo(controller);
 
-var kv = $(".kv").children();
-var scroll = 0;
 // var easing = 0.1;
 // var smoothScroll = 0;
 
@@ -52,8 +53,11 @@ function switchImage(scroll) {
     for (let i = 0; i < kv.length; i++) {
 
       if ( oneImageDuration * (i) < scroll && scroll <= oneImageDuration * (i + 1) ) {
+
         const valueDec = calcValue(scroll, i, "dec");
         const valueInc = calcValue(scroll, i, "inc");
+
+        // i = 0の時はスキップ
         if (i !== 0) $(kv[i - 1]).css("opacity", valueDec);
         $(kv[i]).css("opacity", valueInc);
 
@@ -81,6 +85,8 @@ function calcValue(scroll, i, direction) {
   }
 }
 
+
+// iOS用にこれも使おう
 // vh計算
 var vh = window.innerHeight * 0.01;
 document.documentElement.style.setProperty('--vh', `${vh}px`);
