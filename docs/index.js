@@ -19,17 +19,6 @@ var scene = new ScrollMagic.Scene({
   .setPin(".kv")
   .addTo(controller);
 
-// var easing = 0.1;
-// var smoothScroll = 0;
-
-// var count = 0;
-// function incrementValue() {
-//   smoothScroll += (scroll - smoothScroll) * easing;
-//   $('.smoothScrollValue').text(smoothScroll);
-//   requestAnimationFrame(incrementValue);
-// }
-
-// requestAnimationFrame(incrementValue);
 
 document.addEventListener('scroll', function () {
   scroll = $(window).scrollTop();
@@ -46,42 +35,34 @@ switchImage(scroll);
 
 function switchImage(scroll) {
 
-  // kv外の時はreturn
-  if (scroll >= duration) return;
+  // kv外の時
+  if (scroll >= duration) {
+    $(kv[numImage - 2]).css("opacity", 0);
+    $(kv[numImage - 1]).css("opacity", 1);
+    return;
+  }
 
-    // kv外の時はラストの画像のopacityを1にして早々にreturn
-    if (scroll >= duration) {
-      $(kv[0]).css("opacity", 0);
-      $(kv[numImage - 2]).css("opacity", 0);
-      $(kv[numImage - 1]).css("opacity", 1);
-      return;
+  // 画像切り替え
+  for (let i = 0; i < kv.length; i++) {
+
+    if ( oneImageDuration * i <= scroll && scroll < oneImageDuration * (i + 1) ) {
+
+      const valueDec = calcValue(scroll, i, "dec");
+      const valueInc = calcValue(scroll, i, "inc");
+
+      $(kv).each(function(index, el) {
+        if (index === i) {
+          $(el).css("opacity", valueDec);
+        }else if(index === i + 1){
+          $(el).css("opacity", valueInc);
+        }else{
+          $(el).css("opacity", 0);
+        }
+      });
     }
 
-    // 画像切り替え
-    for (let i = 0; i < kv.length; i++) {
+  }
 
-      var activeNum;
-
-      if ( oneImageDuration * i <= scroll && scroll < oneImageDuration * (i + 1) ) {
-
-        activeNum = i;
-        const valueDec = calcValue(scroll, i, "dec");
-        const valueInc = calcValue(scroll, i, "inc");
-
-        $(kv[i]).css("opacity", valueDec);
-        $(kv[i + 1]).css("opacity", valueInc);
-
-      }else{
-        // スクロールが早い場合を考慮して、対象以外の画像のopacityを0に
-        $(kv[i + 1]).css("opacity", 0);
-        // $(kv).each(function (index, el) {
-        //   if (index !== activeNum && index !== activeNum + 1){
-        //     $(el).css("opacity", 0);
-        //   }
-        // });
-      }
-
-    }
 }
 
 
